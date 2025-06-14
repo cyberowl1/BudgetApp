@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: rails-build-pipeline
+spec:
+  tasks:
+    - name: clone-repo
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      params:
+        - name: url
+          value: https://github.com/YOUR_USERNAME/budget-app
+        - name: revision
+          value: main
+        - name: subdirectory
+          value: ""
+
+    - name: build-and-push
+      taskRef:
+        name: kaniko
+        kind: ClusterTask
+      runAfter:
+        - clone-repo
+      params:
+        - name: IMAGE
+          value: docker.io/YOUR_USERNAME/rails-app
+        - name: CONTEXT
+          value: /workspace/output
